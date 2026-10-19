@@ -13,6 +13,7 @@
 // @grant        GM_xmlhttpRequest
 // @connect      api.github.com
 // @connect      raw.githubusercontent.com
+// @connect      datasets-server.huggingface.co
 // @run-at       document-idle
 // @license MIT
 // @downloadURL https://update.greasyfork.org/scripts/563029/Arena%20Manager.user.js
@@ -31,6 +32,8 @@
     const LOGO_CACHE_KEY = 'arena_manager_logos';
     const ICON_ORG_MAP_KEY = 'arena_manager_icon_org_map';
     const LOGO_BASE_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/Organization%20Logos/`;
+	const HF_ARENA_TEXT_URL = 'https://datasets-server.huggingface.co/rows?dataset=lmarena-ai%2Fleaderboard-dataset&config=text_style_control&split=latest';
+	const HF_ARENA_SEARCH_URL = 'https://datasets-server.huggingface.co/rows?dataset=lmarena-ai%2Fleaderboard-dataset&config=search&split=latest';
 
     // ==================== 1. 国际化系统 ====================
     const I18N = {
@@ -215,7 +218,9 @@
                 invalidSyncInterval: '同步间隔必须是1-60之间的整数',
                 compact: '紧凑',
                 grid: '网格',
-                list: '列表'
+                list: '列表',
+				ratingDesc: 'Rating (High to Low)',
+				ratingAsc: 'Rating (Low to High)'
             }
         },
         'en': {
@@ -399,7 +404,9 @@
                 invalidSyncInterval: 'Sync interval must be 1-60',
                 compact: 'Compact',
                 grid: 'Grid',
-                list: 'List'
+                list: 'List',
+				ratingDesc: 'Rating (High to Low)',
+				ratingAsc: 'Rating (Low to High)'
             }
         },
         'zh-TW': {
@@ -583,7 +590,9 @@
                 invalidSyncInterval: '同步間隔必須是1-60之間的整數',
                 compact: '緊湊',
                 grid: '網格',
-                list: '列表'
+                list: '列表',
+				ratingDesc: 'Rating (High to Low)',
+				ratingAsc: 'Rating (Low to High)'
             }
         },
         'ja': {
@@ -767,7 +776,9 @@
                 invalidSyncInterval: '同期間隔は1〜60の整数である必要があります',
                 compact: 'コンパクト',
                 grid: 'グリッド',
-                list: 'リスト'
+                list: 'リスト',
+				ratingDesc: 'Rating (High to Low)',
+				ratingAsc: 'Rating (Low to High)'
             }
         },
         'ko': {
@@ -951,7 +962,9 @@
                 invalidSyncInterval: '동기화 간격은 1-60 사이의 정수여야 합니다',
                 compact: '컴팩트',
                 grid: '그리드',
-                list: '리스트'
+                list: '리스트',
+				ratingDesc: 'Rating (High to Low)',
+				ratingAsc: 'Rating (Low to High)'
             }
         },
         'es': {
@@ -1135,7 +1148,9 @@
                 invalidSyncInterval: 'El intervalo debe ser entre 1-60',
                 compact: 'Compacto',
                 grid: 'Cuadrícula',
-                list: 'Lista'
+                list: 'Lista',
+				ratingDesc: 'Rating (High to Low)',
+				ratingAsc: 'Rating (Low to High)'
             }
         },
         'fr': {
@@ -1319,7 +1334,9 @@
                 invalidSyncInterval: 'L\'intervalle doit être entre 1-60',
                 compact: 'Compact',
                 grid: 'Grille',
-                list: 'Liste'
+                list: 'Liste',
+				ratingDesc: 'Rating (High to Low)',
+				ratingAsc: 'Rating (Low to High)'
             }
         },
         'de': {
@@ -1503,7 +1520,9 @@
                 invalidSyncInterval: 'Intervall muss zwischen 1-60 liegen',
                 compact: 'Kompakt',
                 grid: 'Raster',
-                list: 'Liste'
+                list: 'Liste',
+				ratingDesc: 'Rating (High to Low)',
+				ratingAsc: 'Rating (Low to High)'
             }
         },
         'ru': {
@@ -1687,7 +1706,9 @@
                 invalidSyncInterval: 'Интервал должен быть от 1 до 60',
                 compact: 'Компактный',
                 grid: 'Сетка',
-                list: 'Список'
+                list: 'Список',
+				ratingDesc: 'Рейтинг (высокий → низкий)',
+				ratingAsc: 'Рейтинг (низкий → высокий)'
             }
         }
     };
@@ -1779,7 +1800,7 @@
         { patterns: [/^athene/i], company: 'NexusFlow', icon: '🔗' },
         { patterns: [/^openhermes/i], company: 'NousResearch', icon: '' },
         { patterns: [/^nvidia/i, /^nemotron/i], company: 'Nvidia', icon: '💚' },
-        { patterns: [/^gpt/i, /^o3/i, /^o4/i, /^chatgpt/i, /^dall-e/i, /^sora/i], company: 'OpenAI', icon: '🟢' },
+		{ patterns: [/^gpt/i, /^o3/i, /^o4/i, /^chatgpt/i, /^dall-e/i, /^sora/i], company: 'OpenAI', icon: '✳️' },
         { patterns: [/^oasst/i], company: 'OpenAssistant', icon: '' },
         { patterns: [/^openchat/i], company: 'OpenChat', icon: '🧿' },
         { patterns: [/^ppl/i, /^perplexity/i, /^sonar/i], company: 'Perplexity AI', icon: '❓' },
@@ -1804,7 +1825,7 @@
         { patterns: [/^starling/i], company: 'UC Berkeley', icon: '' },
         { patterns: [/^solar/i], company: 'Upstage AI', icon: '' },
         { patterns: [/^guanaco/i], company: 'UW', icon: '' },
-        { patterns: [/^grok/i], company: 'SpaceXAI', icon: '⚫' },
+        { patterns: [/^grok/i], company: 'xAI', icon: '𝕏' },
         { patterns: [/^mimo/i], company: 'Xiaomi', icon: '🍊' },
         { patterns: [/^glm/i], company: 'Z.ai', icon: '🔮' }
     ];
@@ -1863,6 +1884,7 @@
             if (!this.data.models) this.data.models = {};
             if (!this.data.orgOrder) this.data.orgOrder = {};
             if (!this.data.settings) this.data.settings = {};
+			if (!this.data.settings.lastRatingUpdate) this.data.settings.lastRatingUpdate = 0;
             if (!this.data.iconOrgMap) this.data.iconOrgMap = JSON.parse(GM_getValue(ICON_ORG_MAP_KEY) || '{}');
             if (this.data.settings.showNewAlert === undefined) this.data.settings.showNewAlert = true;
             if (this.data.settings.defaultVisible === undefined) this.data.settings.defaultVisible = true;
@@ -2101,7 +2123,8 @@
             return {
                 visible: this.data.settings.defaultVisible, company, icon, companyManual: false,
                 modes: [mode], starred: false, isNew: true, vision, note: '',
-                fileUpload: featureFlags.fileUpload || false
+                fileUpload: featureFlags.fileUpload || false,
+				ratings: {}
             };
         }
 
@@ -2117,6 +2140,7 @@
             fresh.vision = model.vision;
             fresh.note = model.note || '';
             fresh.fileUpload = model.fileUpload || false;
+			fresh.ratings = model.ratings || {};
             this.data.models[name] = fresh;
             this.save();
         }
@@ -2154,7 +2178,125 @@
                 console.warn('[Arena Manager] 远程配置加载失败，使用内置配置', e);
             }
         }
-    }
+		async updateRatings(force = false) {
+			const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+			const now = Date.now();
+
+			const fetchJson = (url) => new Promise((resolve) => {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: url,
+					timeout: 15000,
+					onload: (res) => {
+						if (res.status >= 200 && res.status < 300) {
+							try { resolve(JSON.parse(res.responseText)); } catch (e) { resolve(null); }
+						} else {
+							resolve(null);
+						}
+					},
+					onerror: (e) => {
+						console.error('[Arena Manager] Ошибка запроса к HF:', e);
+						resolve(null);
+					},
+					ontimeout: () => resolve(null)
+				});
+			});
+
+			// 1. ПРОВЕРКА КЭША: Нужно ли скачивать с Hugging Face?
+			// Скачиваем, если: запрошено принудительно ИЛИ кэша ещё нет ИЛИ прошли сутки
+			const needDownload = force || 
+				!this.data.hfCache || 
+				!this.data.hfCache.text || 
+				(now - (this.data.settings.lastRatingUpdate || 0) >= ONE_DAY_MS);
+
+			if (needDownload) {
+				console.log('[Arena Manager] Скачивание свежих рейтингов с Hugging Face...');
+
+				const fetchAllRows = async (baseUrl) => {
+					let allRows = [];
+					for (let offset = 0; offset <= 200; offset += 100) {
+						const page = await fetchJson(`${baseUrl}&offset=${offset}&limit=100`);
+						const rows = (page?.rows || []).map(r => r.row);
+						if (rows.length === 0) break;
+						allRows.push(...rows);
+						if (rows.length < 100) break;
+					}
+					return allRows;
+				};
+
+				const [textRows, searchRows] = await Promise.all([
+					fetchAllRows(HF_ARENA_TEXT_URL),
+					fetchAllRows(HF_ARENA_SEARCH_URL)
+				]);
+
+				if (textRows.length > 0 || searchRows.length > 0) {
+					// Сохраняем скачанные таблицы прямо в базу скрипта
+					this.data.hfCache = {
+						text: textRows,
+						search: searchRows
+					};
+					this.data.settings.lastRatingUpdate = now;
+					this.save();
+					console.log(`[Arena Manager] Кэш рейтингов сохранён (Text: ${textRows.length}, Search: ${searchRows.length})`);
+				}
+			} else {
+				console.log('[Arena Manager] Используется локальный кэш рейтингов.');
+			}
+
+			// 2. ПРИМЕНЕНИЕ: Расставляем баллы моделям из сохранённого кэша
+			if (!this.data.hfCache) return;
+
+			const textRows = this.data.hfCache.text || [];
+			const searchRows = this.data.hfCache.search || [];
+
+			const clean = str => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+			const findScore = (modelName, list, isSearchCategory = false) => {
+				const isSearchModel = modelName.toLowerCase().includes('search');
+				if (!isSearchCategory && isSearchModel) return null;
+				if (isSearchCategory && !isSearchModel) return null;
+
+				const target = clean(modelName);
+
+				// Точное совпадение
+				let match = list.find(m => clean(m.model_name) === target);
+				if (match) return match.rating ?? null;
+
+				// Вхождение
+				match = list.find(m => {
+					const lbName = clean(m.model_name);
+					return (target.length >= 5 && lbName.length >= 5) &&
+					       (lbName.includes(target) || target.includes(lbName));
+				});
+				if (match) return match.rating ?? null;
+
+				// Префикс
+				match = list.find(m => {
+					const lbName = clean(m.model_name);
+					return (target.length >= 6 && lbName.length >= 6) &&
+						   (target.startsWith(lbName) || lbName.startsWith(target));
+				});
+				return match ? (match.rating ?? null) : null;
+			};
+
+			let updatedCount = 0;
+			Object.keys(this.data.models).forEach(name => {
+				const model = this.data.models[name];
+				if (!model.ratings) model.ratings = {};
+
+				const tScore = findScore(name, textRows, false);
+				const sScore = findScore(name, searchRows, true);
+
+				if (tScore !== null) model.ratings.text = Math.round(tScore);
+				if (sScore !== null) model.ratings.search = Math.round(sScore);
+
+				if (tScore !== null || sScore !== null) updatedCount++;
+			});
+
+			this.save();
+			console.log(`[Arena Manager] Рейтинги применены к ${updatedCount} из ${Object.keys(this.data.models).length} моделей.`);
+		}
+    } // Закрытие DataManager
 
     // ==================== 5. 扫描器 ====================
     class Scanner {
@@ -2464,6 +2606,27 @@
             return I18N[lang]?.ui?.[key] || I18N['zh-CN'].ui[key] || key;
         }
 
+		getModelRating(model, modeOverride = null) {
+			if (!model || !model.ratings) return null;
+
+			// Если явно запрошен конкретный режим (вкладка Text, Search и т.д.)
+			if (modeOverride) return model.ratings[modeOverride] ?? null;
+
+			if (this.currentMode === 'text') return model.ratings.text ?? null;
+			if (this.currentMode === 'search') return model.ratings.search ?? null;
+			if (this.currentMode === 'code') return model.ratings.code ?? null;
+
+			// Если мы на вкладке "Все", "Избранное" или "Видимые":
+			// Сначала пробуем режим текущей страницы Arena (текст или поиск)
+			const activePageMode = ModeDetector.detect() || 'text';
+			if (model.ratings[activePageMode]) {
+				return model.ratings[activePageMode];
+			}
+
+			// Если для текущего режима Arena очков нет, берем ЛЮБОЙ доступный рейтинг этой модели:
+			return model.ratings.text ?? model.ratings.search ?? model.ratings.code ?? null;
+		}
+
         init() {
             this.injectStyles();
             this.createFab();
@@ -2620,6 +2783,7 @@
                 .lmm-tag.imgtype { background: #fce7f3; color: #9d174d; }
                 .lmm-tag.vision { background: #e0f2fe; color: #0369a1; }
                 .lmm-tag.group { background: #f0fdf4; color: #15803d; }
+                .lmm-tag.rating { background: #fef3c7; color: #b45309; font-weight: 600; font-variant-numeric: tabular-nums; }
                 @media (prefers-color-scheme: dark) {
                     .lmm-tag.org { background: #3730a3; color: #c7d2fe; }
                     .lmm-tag.mode { background: #78350f; color: #fef3c7; }
@@ -2627,6 +2791,7 @@
                     .lmm-tag.imgtype { background: #831843; color: #fbcfe8; }
                     .lmm-tag.vision { background: #0c4a6e; color: #bae6fd; }
                     .lmm-tag.group { background: #14532d; color: #bbf7d0; }
+                    .lmm-tag.rating { background: #78350f; color: #fde68a; }
                 }
                 .lmm-card-actions { position: absolute; top: 4px; right: 4px; display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
                 .lmm-card:hover .lmm-card-actions { opacity: 1; }
@@ -2639,16 +2804,16 @@
                 .lmm-stat b { color: var(--lmm-text); }
                 .lmm-empty { text-align: center; padding: 30px 20px; color: var(--lmm-text2); }
                 .lmm-empty-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
-                .lmm-toast { position: fixed; top: 60px; right: 12px; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--lmm-bg); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 100001; animation: lmm-in 0.25s ease; border-left: 3px solid var(--lmm-primary); font-size: 13px; max-width: 350px; }
+                .lmm-toast { position: fixed; top: 60px; right: 12px; display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--lmm-bg); color: var(--lmm-text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 100001; animation: lmm-in 0.25s ease; border-left: 3px solid var(--lmm-primary); font-size: 13px; max-width: 350px; }
                 .lmm-toast-success { border-left-color: var(--lmm-success); }
                 .lmm-toast-warning { border-left-color: var(--lmm-warning); }
                 @keyframes lmm-in { from { transform: translateX(100%); opacity: 0; } }
                     .lmm-toast-x { background: none; border: none; font-size: 16px; cursor: pointer; color: var(--lmm-text2); }
-                .lmm-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); background: var(--lmm-bg); border-radius: 10px; padding: 16px; z-index: 100002; min-width: 320px; max-width: 90vw; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); opacity: 0; visibility: hidden; transition: all 0.2s; pointer-events: none; }
+                .lmm-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); background: var(--lmm-bg); color: var(--lmm-text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; border-radius: 10px; padding: 16px; z-index: 100002; min-width: 320px; max-width: 90vw; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.2); opacity: 0; visibility: hidden; transition: all 0.2s; pointer-events: none; }
                 .lmm-modal.open { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
                 .lmm-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100001; opacity: 0; visibility: hidden; transition: all 0.2s; pointer-events: none; }
                 .lmm-modal-overlay.open { opacity: 1; visibility: visible; pointer-events: auto; }
-                .lmm-modal-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+                .lmm-modal-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--lmm-text); }
                 .lmm-modal-body { margin-bottom: 14px; }
                 .lmm-modal-footer { display: flex; justify-content: flex-end; gap: 8px; }
                 .lmm-form-group { margin-bottom: 12px; }
@@ -2676,7 +2841,7 @@
                 .lmm-setting-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--lmm-border); }
                 .lmm-setting-row:last-child { border-bottom: none; }
                 .lmm-setting-info { flex: 1; }
-                .lmm-setting-title { font-weight: 500; margin-bottom: 2px; }
+                .lmm-setting-title { font-weight: 500; margin-bottom: 2px; color: var(--lmm-text); }
                 .lmm-setting-desc { font-size: 11px; color: var(--lmm-text2); }
                 .lmm-detail-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--lmm-border); }
                 .lmm-detail-row:last-child { border-bottom: none; }
@@ -2704,9 +2869,15 @@
                 .lmm-card-name .lmm-org-icon { width: 14px; height: 14px; }
 
                 .lmm-dynamic-svg { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; }
-                .lmm-dynamic-svg svg { width: 100%; height: 100%; }
+                .lmm-dynamic-svg svg { width: 100%; height: 100%; color: var(--lmm-text) !important; }
                 .lmm-sidebar-item .lmm-dynamic-svg { width: 14px; height: 14px; }
                 .lmm-card-name .lmm-dynamic-svg { width: 14px; height: 14px; }
+
+                /* Белый логотип превращается в чёткий тёмный без поломки цветных градиентов */
+                .lmm-invert-svg { filter: invert(1) brightness(0.2); }
+                @media (prefers-color-scheme: dark) {
+                    .lmm-invert-svg { filter: none; }
+                }
             `);
         }
 
@@ -2925,6 +3096,8 @@
                         <option value="starred-desc" data-i18n="starredFirst" data-icon="⭐"></option>
                         <option value="name-asc" data-i18n="nameAZ" data-icon="🔤"></option>
                         <option value="name-desc" data-i18n="nameZA" data-icon="🔤"></option>
+                        <option value="rating-desc" data-i18n="ratingDesc" data-icon="🏆"></option>
+                        <option value="rating-asc" data-i18n="ratingAsc" data-icon="📉"></option>
                      </select>
                     <div class="lmm-view-toggle">
                         <button class="lmm-view-btn active" data-view="grid" title="Grid">⊞</button>
@@ -4307,6 +4480,13 @@
                     if (!a.starred && b.starred) return 1;
                     return a.name.localeCompare(b.name);
                 }
+				if (this.sort.by === 'rating') {
+					const rA = this.getModelRating(a) ?? -9999;
+					const rB = this.getModelRating(b) ?? -9999;
+					let c = rA - rB;
+					if (c === 0) c = a.name.localeCompare(b.name);
+					return this.sort.order === 'desc' ? -c : c;
+				}
                 let c = 0;
                 if (this.sort.by === 'name') c = a.name.localeCompare(b.name);
                 else if (this.sort.by === 'org') {
@@ -4425,7 +4605,9 @@
 
         getOrgLogoHtml(company, fallbackIcon = '❔', svgHtml = '') {
             if (svgHtml) {
-                return `<span class="lmm-dynamic-svg">${svgHtml}</span>`;
+                // Помечаем белые иконки OpenAI и Grok для авто-инверсии
+                const isWhiteLogo = ['OpenAI', 'SpaceXAI', 'xAI', 'Ideogram', 'StepFun', 'Moonshot', 'Amazon', 'Black Forest Labs'].includes(company);
+                return `<span class="lmm-dynamic-svg ${isWhiteLogo ? 'lmm-invert-svg' : ''}">${svgHtml}</span>`;
             }
             const rule = COMPANY_RULES.find(r => r.company === company);
             if (rule) {
@@ -4959,6 +5141,10 @@
                     const fileUploadTag = m.fileUpload ? `<span class="lmm-tag vision">📄</span>` : '';
                     const modelGroups = this.dm.getModelGroups(m.name);
                     const groupTags = modelGroups.slice(0, 2).map(() => `<span class="lmm-tag group">📁</span>`).join('');
+					const currentRating = this.getModelRating(m);
+					const ratingTag = currentRating
+					    ? `<span class="lmm-tag rating" title="Arena Elo Score">🏆 ${Math.round(currentRating)}</span>`
+					    : '';
 
                     const isSelected = this.selectedModels.has(m.name);
                     const showCheck = this.isMultiSelectMode;
@@ -4989,6 +5175,7 @@
                                     ${visionTag}
                                     ${fileUploadTag}
                                     ${groupTags}
+									${ratingTag}
                                     ${m.isNew ? `<span class="lmm-tag new">${this.t('newFound')}</span>` : ''}
                                 </div>
                                 ${noteHtml}
@@ -5209,6 +5396,18 @@
                         ` : `<span style="color:var(--lmm-text2);font-size:11px">${this.t('noGroupHint')}</span>`}
                     </span>
                 </div>
+				<div class="lmm-detail-row">
+					<span class="lmm-detail-label">Text Elo</span>
+					<span class="lmm-detail-value">
+						${m.ratings?.text ? `<span class="lmm-tag rating">🏆 ${m.ratings.text}</span>` : '<span style="color:var(--lmm-text2)">—</span>'}
+					</span>
+				</div>
+				<div class="lmm-detail-row">
+					<span class="lmm-detail-label">Search Elo</span>
+					<span class="lmm-detail-value">
+						${m.ratings?.search ? `<span class="lmm-tag rating">🔍 ${m.ratings.search}</span>` : '<span style="color:var(--lmm-text2)">—</span>'}
+					</span>
+				</div>
                 <div class="lmm-detail-row" style="flex-direction:column;align-items:stretch">
                     <span class="lmm-detail-label" style="margin-bottom:4px">${this.t('note')}</span>
                     <textarea class="lmm-form-input" id="lmm-edit-note" rows="2" placeholder="${this.t('notePlaceholder')}" style="resize:vertical">${this.esc(m.note || '')}</textarea>
@@ -5254,52 +5453,56 @@
             this.editingModel = null;
         }
 
-        saveEdit() {
-            if (!this.editingModel) return;
+		saveEdit() {
+			if (!this.editingModel) return;
 
-            const body = this.editModal.querySelector('#lmm-edit-body');
-            const company = body.querySelector('#lmm-edit-org').value.trim();
-            const isBuiltInOrg = COMPANY_RULES.some(r => r.company === (company || 'Other'));
-            let icon;
-            if (isBuiltInOrg) {
-                const rule = COMPANY_RULES.find(r => r.company === (company || 'Other'));
-                icon = rule ? rule.icon : '❔';
-            } else {
-                const iconInput = body.querySelector('#lmm-edit-icon');
-                icon = iconInput ? iconInput.value.trim() : '';
-            }
-            const note = body.querySelector('#lmm-edit-note').value.trim();
-            const starred = body.querySelector('#lmm-edit-starred').classList.contains('on');
+			const body = this.editModal.querySelector('#lmm-edit-body');
+			const company = body.querySelector('#lmm-edit-org').value.trim();
+			const isBuiltInOrg = COMPANY_RULES.some(r => r.company === (company || 'Other'));
+			let icon;
+			if (isBuiltInOrg) {
+				const rule = COMPANY_RULES.find(r => r.company === (company || 'Other'));
+				icon = rule ? rule.icon : '❔';
+			} else {
+				const iconInput = body.querySelector('#lmm-edit-icon');
+				icon = iconInput ? iconInput.value.trim() : '';
+			}
+			const note = body.querySelector('#lmm-edit-note').value.trim();
+			const starred = body.querySelector('#lmm-edit-starred').classList.contains('on');
 
-            const allGroups = this.dm.getGroupNames();
-            const selectedGroups = [];
-            body.querySelectorAll('#lmm-edit-groups .lmm-checkbox-item.checked').forEach(item => {
-                selectedGroups.push(item.dataset.group);
-            });
+			const currentModel = this.dm.getModel(this.editingModel);
+			const ratings = currentModel?.ratings || {};
 
-            allGroups.forEach(g => {
-                if (selectedGroups.includes(g)) {
-                    this.dm.addToGroup(g, this.editingModel);
-                } else {
-                    this.dm.removeFromGroup(g, this.editingModel);
-                }
-            });
+			const allGroups = this.dm.getGroupNames();
+			const selectedGroups = [];
+			body.querySelectorAll('#lmm-edit-groups .lmm-checkbox-item.checked').forEach(item => {
+				selectedGroups.push(item.dataset.group);
+			});
 
-            this.dm.updateModel(this.editingModel, {
-                company: company || 'Other',
-                companyManual: company !== '',
-                icon: icon || this.dm.getModel(this.editingModel).icon,
-                note: note,
-                starred: starred
-            });
+			allGroups.forEach(g => {
+				if (selectedGroups.includes(g)) {
+					this.dm.addToGroup(g, this.editingModel);
+				} else {
+					this.dm.removeFromGroup(g, this.editingModel);
+				}
+			});
 
-            this.closeEditModal();
-            this.refresh();
-            this.updateSidebar();
-            this.updateTopbar();
-            this.scanner.toast(this.t('saved'), 'success');
-            this.triggerSyncOnChange();
-        }
+			this.dm.updateModel(this.editingModel, {
+				company: company || 'Other',
+				companyManual: company !== '',
+				icon: icon || this.dm.getModel(this.editingModel).icon,
+				note: note,
+				starred: starred,
+				ratings: ratings // <-- Сохраняем объект рейтингов
+			});
+
+			this.closeEditModal();
+			this.refresh();
+			this.updateSidebar();
+			this.updateTopbar();
+			this.scanner.toast(this.t('saved'), 'success');
+			this.triggerSyncOnChange();
+		}
 
         resetEdit() {
             if (!this.editingModel) return;
@@ -5472,6 +5675,12 @@
                 ui.refresh();
             }
         });
+		// Фоновое обновление рейтингов раз в сутки
+		dm.updateRatings().then(() => {
+			if (ui.isOpen) {
+				ui.refresh();
+			}
+		});
     }
 
     if (document.readyState === 'loading') {
